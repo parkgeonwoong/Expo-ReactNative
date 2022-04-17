@@ -9,9 +9,20 @@ import {
   Dimensions,
 } from "react-native";
 import * as Location from "expo-location";
+import { Fontisto } from "@expo/vector-icons";
 
-const { width: SCREEN_WIDTH } = Dimensions.get("screen");
-const API_KEY = "d1fe3418dfc59eb30f55c27f2a885061";
+const { width: SCREEN_WIDTH } = Dimensions.get("screen"); // 휴대폰 화면
+const API_KEY = "d1fe3418dfc59eb30f55c27f2a885061"; // 날씨 API
+const icons = {
+  // icon맞춰 불러오기
+  Clouds: "cloudy",
+  Clear: "day-sunny",
+  Rain: "rain",
+  Atmosphere: "cloudy-gusts",
+  Snow: "snow",
+  Drizzle: "day-rain",
+  Thunderstorm: "lightning",
+};
 
 export default function App() {
   const [city, setCity] = useState("Loading...");
@@ -19,21 +30,24 @@ export default function App() {
   const [ok, setOk] = useState(true);
 
   const getWeather = async () => {
+    // 사용자 위치 요청
     const { granted } = await Location.requestForegroundPermissionsAsync();
     if (!granted) {
       setOk(false);
     }
-
+    // 위도, 경도 옵션에 맞춰 불러오기
     const {
       coords: { latitude, longitude },
     } = await Location.getCurrentPositionAsync({ accuracy: 5 });
+    // 주소 알아오기
     const location = await Location.reverseGeocodeAsync(
       { latitude, longitude },
       { useGoogleMaps: false }
     );
+    // 도시이름 가져오기
     setCity(location[0].city);
 
-    // 날씨
+    // 날씨 API
     const response = await fetch(
       `https://api.openweathermap.org/data/2.5/onecall?lat=${latitude}&lon=${longitude}&exclude=alert&appid=${API_KEY}&units=metric`
     );
@@ -48,6 +62,7 @@ export default function App() {
   return (
     <View style={styles.container}>
       <View style={styles.city}>
+        <Fontisto name="android" size={32} color="black" />
         <Text style={styles.cityName}>{city}</Text>
       </View>
 
@@ -60,22 +75,40 @@ export default function App() {
       >
         {days.length === 0 ? (
           <View style={styles.loading}>
-            <ActivityIndicator size="large" color="#4361ee" />
+            <ActivityIndicator size="large" color="white" />
           </View>
         ) : (
           days.map((day, index) => (
             <View key={index} style={styles.day}>
-              <Text style={styles.temp}>
-                {parseFloat(day.temp.day).toFixed(1)}
-              </Text>
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  width: "80%",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Text style={styles.temp}>
+                  {parseFloat(day.temp.day).toFixed(1)}
+                </Text>
+                <Fontisto
+                  name={icons[day.weather[0].main]}
+                  size={68}
+                  color="white"
+                />
+              </View>
               <Text style={styles.description}>{day.weather[0].main}</Text>
-              <Text>{day.weather[0].description}</Text>
+              <Text style={{ color: "white" }}>
+                {day.weather[0].description}
+              </Text>
+              <Text style={{ color: "white" }}>
+                {new Date(day.dt * 1000).toString().substring(0, 10)}
+              </Text>
             </View>
           ))
         )}
       </ScrollView>
-
-      <StatusBar style="dark" />
+      <StatusBar style="light" />
     </View>
   );
 }
@@ -87,48 +120,54 @@ const styles = StyleSheet.create({
   },
   city: {
     flex: 0.5,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: "space-evenly",
+    alignItems: "flex-start",
     margin: 5,
-    borderRadius: 10,
+    paddingHorizontal: 40,
     backgroundColor: "white",
-    elevation: 5,
+    // borderRadius: 10,
+    // elevation: 5,
   },
   cityName: {
-    fontSize: 28,
+    fontSize: 32,
     fontWeight: "500",
   },
   scrollView: {
     // flex: 3,
-    margin: 5,
+    margin: 35,
     borderRadius: 10,
-    backgroundColor: "white",
-    elevation: 5,
+    backgroundColor: "#4895ef",
+    elevation: 10,
   },
   weather: {
     margin: 5,
-    backgroundColor: "white",
+    backgroundColor: "#4895ef",
   },
   loading: {
     // flex: 1,
     width: SCREEN_WIDTH,
     justifyContent: "center",
     alignItems: "center",
-    // backgroundColor: "tomato",
+    marginLeft: -35,
   },
   day: {
     width: SCREEN_WIDTH,
-    marginLeft: -5,
-    // justifyContent: "center",
-    alignItems: "center",
+    alignItems: "flex-start",
+    paddingHorizontal: 20,
+    color: "white",
   },
   temp: {
     marginTop: 50,
-    fontSize: 128,
+    marginLeft: -10,
+    fontWeight: "600",
+    fontSize: 80,
+    color: "white",
   },
   description: {
     // marginLeft: 10,
     marginTop: -10,
-    fontSize: 40,
+    fontSize: 30,
+    fontWeight: "500",
+    color: "white",
   },
 });
