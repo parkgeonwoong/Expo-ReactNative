@@ -1,19 +1,55 @@
 import { StatusBar } from "expo-status-bar";
 import { useState } from "react";
-import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  TextInput,
+} from "react-native";
 import theme from "./colors";
 
 export default function App() {
+  const [working, setWorking] = useState(true);
+  const [text, setText] = useState("");
+  const travel = () => setWorking(false);
+  const work = () => setWorking(true);
+  const onChangeText = (payload) => setText(payload);
+
+  console.log(text);
+
   return (
     <View style={styles.container}>
       <StatusBar style="auto" />
       <View style={styles.header}>
-        <TouchableOpacity>
-          <Text style={styles.btnText}>Work</Text>
+        <TouchableOpacity onPress={work}>
+          <Text
+            style={{
+              ...styles.btnText,
+              color: working ? theme.black : theme.gray,
+            }}
+          >
+            Work
+          </Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => console.log("")}>
-          <Text style={styles.btnText}>Travel</Text>
+        <TouchableOpacity onPress={travel}>
+          <Text
+            style={{
+              ...styles.btnText,
+              color: !working ? theme.black : theme.gray,
+            }}
+          >
+            Travel
+          </Text>
         </TouchableOpacity>
+      </View>
+      <View>
+        <TextInput
+          onChangeText={onChangeText}
+          value={text}
+          placeholder={working ? "Add To Do" : "Where do you want to go"}
+          style={styles.input}
+        />
       </View>
     </View>
   );
@@ -32,7 +68,15 @@ const styles = StyleSheet.create({
   },
   btnText: {
     fontSize: 38,
-    fontWeight: "600",
-    color: theme.black,
+    fontWeight: "700",
+  },
+  input: {
+    backgroundColor: "white",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    marginTop: 20,
+    fontSize: 15,
+    elevation: 3,
   },
 });
