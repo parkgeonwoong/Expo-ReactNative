@@ -1,13 +1,19 @@
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View } from "react-native";
+import { useState } from "react";
+import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import theme from "./colors";
 
 export default function App() {
   return (
     <View style={styles.container}>
       <StatusBar style="auto" />
       <View style={styles.header}>
-        <Text style={styles.btnText}>Work</Text>
-        <Text style={styles.btnText}>Travel</Text>
+        <TouchableOpacity>
+          <Text style={styles.btnText}>Work</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => console.log("")}>
+          <Text style={styles.btnText}>Travel</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -16,7 +22,7 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F6F8FC",
+    backgroundColor: theme.bg,
     paddingHorizontal: 20,
   },
   header: {
@@ -27,6 +33,6 @@ const styles = StyleSheet.create({
   btnText: {
     fontSize: 38,
     fontWeight: "600",
-    color: "black",
+    color: theme.black,
   },
 });
