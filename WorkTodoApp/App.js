@@ -7,9 +7,11 @@ import {
   TouchableOpacity,
   TextInput,
   ScrollView,
+  Alert,
 } from "react-native";
 import theme from "./colors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Fontisto } from "@expo/vector-icons";
 
 const STORAGE_KEY = "@toDos";
 
@@ -56,6 +58,24 @@ export default function App() {
     setText("");
   };
 
+  // 삭제 버튼
+  const deleteToDo = (key) => {
+    Alert.alert("Delete To Do?", "Are you sure?", [
+      { text: "Cancel" },
+      {
+        text: "Sure",
+        onPress: async () => {
+          const newToDos = { ...toDos };
+          delete newToDos[key];
+          setToDos(newToDos);
+          await saveToDo(newToDos);
+        },
+      },
+    ]);
+
+    return;
+  };
+
   // console.log(toDos);
 
   return (
@@ -97,6 +117,13 @@ export default function App() {
           toDos[key].working === working ? (
             <View style={styles.toDo} key={key}>
               <Text style={styles.toDoText}>{toDos[key].text}</Text>
+              <TouchableOpacity onPress={() => deleteToDo(key)}>
+                <Fontisto
+                  name="checkbox-active"
+                  size={18}
+                  color={theme.black}
+                />
+              </TouchableOpacity>
             </View>
           ) : null
         )}
@@ -135,6 +162,9 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     paddingHorizontal: 30,
     borderRadius: 20,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     // elevation: 1,
   },
   toDoText: {
