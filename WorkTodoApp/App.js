@@ -40,7 +40,9 @@ export default function App() {
     try {
       const s = await AsyncStorage.getItem(STORAGE_KEY);
       // console.log(JSON.parse(s));
-      setToDos(JSON.parse(s));
+      if (s) {
+        setToDos(JSON.parse(s));
+      }
     } catch (e) {
       console.log("Load Error msg");
     }
