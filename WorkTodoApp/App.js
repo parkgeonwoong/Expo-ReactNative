@@ -8,6 +8,7 @@ import {
   TextInput,
   ScrollView,
   Alert,
+  Platform,
 } from "react-native";
 import theme from "./colors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -62,18 +63,28 @@ export default function App() {
 
   // 삭제 버튼
   const deleteToDo = (key) => {
-    Alert.alert("Delete To Do?", "Are you sure?", [
-      { text: "Cancel" },
-      {
-        text: "Sure",
-        onPress: async () => {
-          const newToDos = { ...toDos };
-          delete newToDos[key];
-          setToDos(newToDos);
-          await saveToDo(newToDos);
+    if (Platform.OS === "web") {
+      const ok = confirm("Do you want to delete this To Do?");
+      if (ok) {
+        const newToDos = { ...toDos };
+        delete newToDos[key];
+        setToDos(newToDos);
+        saveToDo(newToDos);
+      }
+    } else {
+      Alert.alert("Delete To Do?", "Are you sure?", [
+        { text: "Cancel" },
+        {
+          text: "Sure",
+          onPress: async () => {
+            const newToDos = { ...toDos };
+            delete newToDos[key];
+            setToDos(newToDos);
+            await saveToDo(newToDos);
+          },
         },
-      },
-    ]);
+      ]);
+    }
 
     return;
   };
@@ -171,7 +182,7 @@ const styles = StyleSheet.create({
   },
   toDoText: {
     color: theme.black,
-    fontSize: 15,
+    fontSize: 17,
     fontWeight: "500",
   },
 });
